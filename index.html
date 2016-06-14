@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>three.js webgl - geometry - cube</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+    body {
+        margin: 0px;
+        background-color: #000000;
+        overflow: hidden;
+    }
+    
+    canvas {
+        width: 100%;
+        height: 100%
+    }
+    
+    div.mdl-switch__track {
+        background: rgba(242, 242, 242, 0.26)
+    }
+    </style>
+    <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.green-blue.min.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script defer src="https://code.getmdl.io/1.1.3/material.min.js"></script>
+</head>
+
+<body>
+    <button class="mdl-button mdl-js-button mdl-button--primary" id="new_plot" style="top: 10px; left: 10px; position:absolute; color:white" onclick="showDialog()">New Plot</button>
+    <div style="top: 16px; right: 12px; position:absolute; width: 130px;">
+        <label class="mdl-switch mdl-js-switch" for="vis_type">
+	    <span class="mdl-switch__label" style="color:white">color-code</span>
+      <input type="checkbox" id="vis_type" class="mdl-switch__input" onclick="toggleColors()">
+    </label>
+    </div>
+    <div class="new-plot-window mdl-card mdl-shadow--2dp" id="dialog" style="position: absolute; top: 50px; left: 10px;z-index:10000 ">
+
+        <textarea type="text" rows="8" id="new_data" placeholder="Paste height data here..." style="height:100%; border:0px; padding:12px"></textarea>
+
+        <div class="mdl-card__actions mdl-card--border">
+          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="reverse_data" style="float:left; width: 20px; margin: 6px;">
+  <input type="checkbox" id="reverse_data" class="mdl-checkbox__input">
+  <span class="mdl-checkbox__label">Reverse</span>
+</label>
+
+            <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" onclick="updateTerrain()" style="margin: 0 auto; float: right;">
+      Plot it!
+    </a>
+        </div>
+    </div>
+    <script id="frag" type="x-shader/x-fragment">
+    varying vec3 vPosition;
+    void main() {
+
+        vec4 purple = vec3(0.51, 0.63, 0.39);
+        vec4 darkblue = vec3(0.02,0.72 ,0.07);
+        vec4 lightblue = vec4(1, .51, .63);
+        vec4 color = purple; 
+
+        color = mix(
+            darkblue,
+            color,
+            min(abs(.5 - vPosition.z) / .5, 1.0) // Start at .5 for .03 units
+        );
+        color = mix(
+            darkblue,
+            color,
+            min(abs(1 - vPosition.z) / .5, 1.0) // Start at .1 for .5 units
+        );
+        gl_FragColor = color;
+    }
+    </script>
+    <script id="vert" type="x-shader/x-fragment">
+        /** * Multiply each vertex by the * model-view matrix and the * projection matrix (both provided * by Three.js) to get a final * vertex position */ 
+        varying vec3 vPosition;
+        void main() {
+          vPosition = position;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); 
+          
+        }
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/threejs/r76/three.min.js"></script>
+
+    <script src="./firstperson.js"></script>
+
+    <script src="./script.js"></script>
+</body>
+
+</html>
