@@ -2,7 +2,6 @@ var camera, scene, renderer;
 var plane, ground;
 var materialHeight,materialSea,textureGround;
 var controls;
-var showColors = false;
 var planeflip = -Math.PI / 2;
 var clock = new THREE.Clock();
 init();
@@ -149,13 +148,11 @@ function showDialog() {
 
 function toggleColors() {
     resetCamera();
-    if (showColors === true) {
-        showColors = false;
-        scene.fog = new THREE.FogExp2(0x00264d, 0, 1000);
+    if ($('#vis_type')[0].checked === true) {
+        scene.fog = new THREE.FogExp2(0x00264d, 0.12, 1000);
         //plane.material = materialHeight;
     } else {
-        showColors = true;
-        scene.fog = new THREE.FogExp2(0x00264d, 0.12, 1000);
+        scene.fog = new THREE.FogExp2(0x00264d, 0, 1000);
         //plane.material = materialSea;
     }
 
