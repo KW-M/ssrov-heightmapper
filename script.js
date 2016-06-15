@@ -152,12 +152,11 @@ function toggleColors() {
     if (showColors === true) {
         showColors = false;
         scene.fog = new THREE.FogExp2(0x00264d, 0, 1000);
-        console.log(plane);
-        plane.material = materialHeight;
+        //plane.material = materialHeight;
     } else {
         showColors = true;
         scene.fog = new THREE.FogExp2(0x00264d, 0.12, 1000);
-        plane.material = materialSea;
+        //plane.material = materialSea;
     }
 
 }
