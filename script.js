@@ -1,6 +1,6 @@
 var camera, scene, renderer;
 var plane, ground;
-var materialHeight,materialSea,textureGround;
+var materialHeight, materialSea, textureGround;
 var controls;
 var planeflip = -Math.PI / 2;
 var clock = new THREE.Clock();
@@ -11,7 +11,7 @@ function init() {
     textureGround = textureLoader.load("./groundTexture.jpg");
     textureGround.repeat.set(4, 4);
     textureGround.wrapS = textureGround.wrapT = THREE.RepeatWrapping;
-    renderer = new THREE.WebGLRenderer();
+    renderer = new THREE.WebGLRenderer({ alpha: true });
     renderer.setClearColor(0xffffff, 0);
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -48,11 +48,12 @@ function onWindowResize() {
 }
 
 function updateTerrain() {
-  
+
     var dataHeight = 1;
     var dataWidth = 1;
     var dataArray = [];
-    var maxHeight = 0,minHeight = 1000;
+    var maxHeight = 0,
+        minHeight = 1000;
     var text = $('#new_data').val() || '1.5,1,1,1\n1,1,1,1\n1,1,1,1\n1,1,1,1\n1,1,1,1\n1,1,1,1\n1,1,1,1';
     var columns = text.split("\n");
     dataWidth = columns.length;
@@ -62,42 +63,42 @@ function updateTerrain() {
             dataHeight = values.length;
         }
         for (var b = 0; b < values.length; b++) {
-         if (values[b] > dataHeight) {
-            maxHeight = values[b];
-        }
-        if (values[b] < dataHeight) {
-            minHeight = values[b];
-        }
+            if (values[b] > dataHeight) {
+                maxHeight = values[b];
+            }
+            if (values[b] < dataHeight) {
+                minHeight = values[b];
+            }
         }
     }
     var heightFactor;
-    if (maxHeight - minHeight > 8){
-      heightFactor =  8 / (maxHeight - minHeight);
+    if (maxHeight - minHeight > 8) {
+        heightFactor = 8 / (maxHeight - minHeight);
     }
     for (var e = 0; e < columns.length; e++) {
         var values2 = columns[e].split(",");
         if (values2.length != dataHeight) {
-          var catchup = dataHeight - values2.length ;
-          for (var f = 0; f < catchup; f++) {
-            values2 = values2.concat([0]);
-          }
+            var catchup = dataHeight - values2.length;
+            for (var f = 0; f < catchup; f++) {
+                values2 = values2.concat([0]);
+            }
         }
         dataArray = dataArray.concat(values2);
         for (var c = 0; c < dataArray.length; c++) {
-          dataArray[c] = dataArray[c] * heightFactor || dataArray[c];
-          //dataArray[c] = dataArray[c] - minHeight;
+            dataArray[c] = dataArray[c] * heightFactor || dataArray[c];
+            //dataArray[c] = dataArray[c] - minHeight;
         }
     }
     var reverse = document.getElementById("reverse_data").checked;
     if (reverse === true) {
-      planeflip = Math.PI / 2;
+        planeflip = Math.PI / 2;
     } else {
-      planeflip = -Math.PI / 2;
+        planeflip = -Math.PI / 2;
     }
     console.log(dataArray);
     console.log(dataHeight);
     console.log(dataWidth);
-    ground = new THREE.PlaneBufferGeometry(dataHeight, dataWidth, dataHeight-1, dataWidth-1);
+    ground = new THREE.PlaneBufferGeometry(dataHeight, dataWidth, dataHeight - 1, dataWidth - 1);
     ground.dynamic = true;
     console.log(ground);
     var counter = 2;
@@ -105,25 +106,37 @@ function updateTerrain() {
         console.log(dataArray[i]);
         ground.attributes.position.array[counter] = Number(dataArray[i]);
         counter = counter + 3;
-     }
+    }
     ground.verticesNeedUpdate = true;
     ground.__dirtyNormals = true;
+    var phongShader = THREE.ShaderLib.phong;
+    var uniforms = THREE.UniformsUtils.clone(phongShader.uniforms);
+    console.log(phongShader);
+    console.log(uniforms);
+    materialPhong = new THREE.ShaderMaterial({
+        uniforms: uniforms,
+        vertexShader: phongShader.vertexShader,
+        fragmentShader: phongShader.fragmentShader,
+        lights:true,
+        fog: true,
+    });
     materialHeight = new THREE.ShaderMaterial({
         vertexShader: document.getElementById("vert").textContent,
         fragmentShader: document.getElementById("frag").textContent,
-        side: THREE.DoubleSide
+        side: THREE.DoubleSide,
+        lights: true
     });
     materialSea = new THREE.MeshPhongMaterial({
-         shininess: 3,
-         color: 0x00264d,
-         specular: 0x0099cc,
-         shading: THREE.SmoothShading,
+        shininess: 3,
+        color: 0x00264d,
+        specular: 0x0099cc,
+        shading: THREE.SmoothShading,
         map: textureGround,
         side: THREE.DoubleSide
     });
-    // material = new THREE.MeshBasicMaterial({
-    //   wireframe: true,
-    // });
+    material = new THREE.MeshBasicMaterial({
+        wireframe: true,
+    });
     ground.computeVertexNormals();
     ground.computeFaceNormals();
     if (scene.children[2] !== undefined) {
@@ -132,8 +145,8 @@ function updateTerrain() {
         $("#dialog").toggle("slow");
     }
     console.log(ground);
-    
-    plane = new THREE.Mesh(ground, materialSea);
+
+    plane = new THREE.Mesh(ground, materialHeight);
     console.log(planeflip);
     plane.rotation.x = planeflip;
     plane.name = 'ground';
@@ -150,11 +163,11 @@ function showDialog() {
 
 function toggleColors() {
     if ($('#vis_type')[0].checked === true) {
-        scene.fog = new THREE.FogExp2(0x00264d, 0.12, 1000);
-        //plane.material = materialHeight;
+        scene.fog = new THREE.FogExp2(0x001933, 0.2, 1000);
+        plane.material = materialSea;
     } else {
         scene.fog = new THREE.FogExp2(0x00264d, 0, 1000);
-        //plane.material = materialSea;
+        plane.material = materialHeight;
     }
 
 }
@@ -165,14 +178,13 @@ function animate() {
 }
 
 function resetCamera() {
-  
+
     console.log(controls);
     controls.object.position.x = 0;
     controls.object.position.y = 3;
     controls.object.position.z = -1;
     controls.object.rotation.y = 0; // Rotates Yaw Object
     console.log(controls.object);
-    controls.object.children[0].rotation.x = 0;
 }
 
 function render() {
