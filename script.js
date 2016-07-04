@@ -109,16 +109,23 @@ function updateTerrain() {
     }
     ground.verticesNeedUpdate = true;
     ground.__dirtyNormals = true;
-    var phongShader = THREE.ShaderLib.phong;
-    var uniforms = THREE.UniformsUtils.clone(phongShader.uniforms);
-    console.log(phongShader);
+    var Shader = THREE.ShaderLib.standard;
+    var uniforms = THREE.UniformsUtils.clone(Shader.uniforms);
     console.log(uniforms);
+    
+    console.log(Shader.vertexShader);
+    console.log(Shader.fragmentShader);
+    uniforms.diffuseOriginal = uniforms.diffuse;
+    uniforms.reflectivity.value = 0.7;
+    uniforms.roughness.value = 0.6;
     materialPhong = new THREE.ShaderMaterial({
         uniforms: uniforms,
-        vertexShader: phongShader.vertexShader,
-        fragmentShader: phongShader.fragmentShader,
+        vertexShader: document.getElementById("vert").textContent,
+        fragmentShader: document.getElementById("frag").textContent,
+        side: THREE.DoubleSide,
         lights:true,
-        fog: true,
+        //fog: true,
+        shading: THREE.SmoothShading,
     });
     materialHeight = new THREE.ShaderMaterial({
         vertexShader: document.getElementById("vert").textContent,
@@ -146,7 +153,7 @@ function updateTerrain() {
     }
     console.log(ground);
 
-    plane = new THREE.Mesh(ground, materialHeight);
+    plane = new THREE.Mesh(ground, materialPhong);
     console.log(planeflip);
     plane.rotation.x = planeflip;
     plane.name = 'ground';
