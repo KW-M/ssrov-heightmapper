@@ -48,6 +48,7 @@ function onWindowResize() {
 }
 
 function updateTerrain() {
+  
     var dataHeight = 1;
     var dataWidth = 1;
     var dataArray = [];
@@ -138,6 +139,7 @@ function updateTerrain() {
     plane.name = 'ground';
     scene.add(plane);
     console.log(scene);
+    resetCamera();
 }
 
 function showDialog() {
@@ -147,7 +149,6 @@ function showDialog() {
 }
 
 function toggleColors() {
-    resetCamera();
     if ($('#vis_type')[0].checked === true) {
         scene.fog = new THREE.FogExp2(0x00264d, 0.12, 1000);
         //plane.material = materialHeight;
@@ -164,13 +165,18 @@ function animate() {
 }
 
 function resetCamera() {
+  
+    console.log(controls);
     controls.object.position.x = 0;
     controls.object.position.y = 3;
     controls.object.position.z = -1;
-    controls.object.lookAt ( new THREE.Vector3( 0, 0, 0 ) );
+    controls.object.rotation.y = 0; // Rotates Yaw Object
+    console.log(controls.object);
+    controls.object.children[0].rotation.x = 0;
 }
 
 function render() {
+    //console.log(camera.rotation);
 
     controls.update(clock.getDelta());
     renderer.render(scene, camera);
