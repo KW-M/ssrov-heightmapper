@@ -23,14 +23,38 @@ function init() {
     camera.position.z = 3;
     camera.position.y = 3;
     camera.rotation.z = 90;
-    ambientLight = new THREE.AmbientLight(0x333333); // 0.2
-    light = new THREE.DirectionalLight(0xFFFFFF, 0.75);
-    scene.add(ambientLight);
-    console.log(light);
-    light.rotation.y = 0.025;
-    light.rotation.y = 0.025;
-    light.rotation.y = 0.025;
-    scene.add(light);
+    var axisHelper = new THREE.AxisHelper( 5 );
+scene.add( axisHelper );
+    // 				hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.1 );
+				// hemiLight.color.setHSL( 0.6, 1, 0.6 );
+				// hemiLight.groundColor.setHSL( 0.095, 1, 0.75 );
+				// hemiLight.position.set( 0, 500, 0 );
+				// scene.add( hemiLight );
+				
+				dirLight = new THREE.DirectionalLight( 0xffffff, 0.1 );
+				dirLight.color.setHSL( 0.1, 1, 0.95 );
+				dirLight.position.set( -0.5, 1.75, 1 );
+				dirLight.position.multiplyScalar( 500 );
+				scene.add( dirLight );
+				dirLight.castShadow = true;
+				dirLight.shadowMapWidth = 2048;
+				dirLight.shadowMapHeight = 2048;
+				var d = 50;
+				dirLight.shadowCameraLeft = -d;
+				dirLight.shadowCameraRight = d;
+				dirLight.shadowCameraTop = d;
+				dirLight.shadowCameraBottom = -d;
+				dirLight.shadowCameraFar = 3500;
+				dirLight.shadowBias = -0.1;
+      ambientLight = new THREE.AmbientLight( 0x404040 , 0.1); // 0.2
+        scene.add(ambientLight);
+    // light = new THREE.DirectionalLight(0xFFFFFF, 0.1);
+
+    // console.log(light);
+    // dirLight.rotation.x = 1.025;
+    // dirLight.rotation.y = 1.025;
+    // dirLight.rotation.z = 1.025;
+    // scene.add(light);
     controls = new THREE.FirstPersonControls(camera);
     controls.movementSpeed = 1;
     controls.lookSpeed = 0.1;
@@ -54,7 +78,7 @@ function updateTerrain() {
     var dataArray = [];
     var maxHeight = 0,
         minHeight = 1000;
-    var text = $('#new_data').val() || '1.5,1,1,1\n1,1,1,1\n1,1,1,1\n1,1,1,1\n1,1,1,1\n1,1,1,1\n1,1,1,1';
+    var text = $('#new_data').val() || '1,2,3,4,5,6,6\n0,2,2,3,4,5,7\n2,0,2,2,3,5,5\n2,0,0,2,3,4,4\n3,3,0,0,3,4,4\n1,1,0,0,2,4,4';
     var columns = text.split("\n");
     dataWidth = columns.length;
     for (var g = 0; g < columns.length; g++) {
