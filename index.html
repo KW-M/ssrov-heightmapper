@@ -15,7 +15,7 @@
     canvas {
         width: 100%;
         height: 100%;
-        background-color: #001933;
+        background-color: #181818;
     }
     
     div.mdl-switch__track {
@@ -42,11 +42,11 @@
         <textarea type="text" rows="8" id="new_data" placeholder="Paste height data here..." style="height:100%; border:0px; padding:12px"></textarea>
 
         <div class="mdl-card__actions mdl-card--border">
-          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="reverse_data" style="float:left; width: 20px; margin: 6px;">
+
 <!-- Left aligned menu below button -->
-<button id="demo-menu-lower-left"
-        class="mdl-button mdl-js-button mdl-button--icon">
-  <i class="material-icons">Settings</i>
+<button id="demo-menu-lower-left" class="mdl-button mdl-js-button">
+  <img class="material-icons" src="./ic_settings_black_24px.svg"/>
+  <span>options<span>
 </button>
 
 <ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect"
@@ -56,9 +56,10 @@
   <li disabled class="mdl-menu__item">Disabled Action</li>
   <li class="mdl-menu__item">Yet Another Action</li>
 </ul>
-<input type="checkbox" id="reverse_data" class="mdl-checkbox__input">
-  <span class="mdl-checkbox__label">Reverse</span>
-</label>
+<!--<label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="reverse_data" style="float:left; width: 20px; margin: 6px;">-->
+<!--  <input type="checkbox" id="reverse_data" class="mdl-checkbox__input">-->
+<!--  <span class="mdl-checkbox__label">Reverse Plot</span>-->
+<!--</label>-->
 
     <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" onclick="updateTerrain()" style="margin: 0 auto; float: right;">
       Plot it!

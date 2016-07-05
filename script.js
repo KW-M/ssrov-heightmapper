@@ -35,7 +35,7 @@ function init() {
 				scene.add( hemiLight );
 				
 				dirLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
-				dirLight.position.set( -3, 6, 4 );
+				dirLight.position.set( -1, 6, 2 );
 				dirLight.position.multiplyScalar( 500 );
 
 				dirLight.castShadow = true;
@@ -68,7 +68,7 @@ function init() {
 
 //Debugging---------------------------------------//
     console.log(camera); 
-    scene.add(new THREE.AxisHelper( 5 ));
+    //scene.add(new THREE.AxisHelper( 5 ));
 
 // functions    
     updateTerrain();
@@ -85,7 +85,7 @@ function onWindowResize() {
 }
 
 function updateTerrain() {
-
+console.log('updated');
     var dataHeight = 1;
     var dataWidth = 1;
     var dataArray = [];
@@ -125,16 +125,17 @@ function updateTerrain() {
             
         }
     }
-    var reverse = document.getElementById("reverse_data").checked;
-    if (reverse === true) {
-        planeflip = Math.PI / 2;
-    } else {
-        planeflip = -Math.PI / 2;
-    }
+    // var reverse = document.getElementById("reverse_data").checked;
+    // if (reverse === true) {
+    //     planeflip = Math.PI / 2;
+    // } else {
+    //     planeflip = -Math.PI / 2;
+    // }
     console.log(dataArray);
     console.log(dataHeight);
     console.log(dataWidth);
     ground = new THREE.PlaneBufferGeometry(dataHeight, dataWidth, dataHeight - 1, dataWidth - 1);
+
     ground.dynamic = true;
     ground.castShadow = true;
     ground.receiveShadow = true;
@@ -144,15 +145,15 @@ function updateTerrain() {
         counter = counter + 3;
     }
     console.log(ground);
-    //var modifier = new THREE.BufferSubdivisionModifier(2);
 
-    // Apply the modifier to our cloned geometry.
 
     
     ground.verticesNeedUpdate = true;
     ground.__dirtyNormals = true;
     
-        //modifier.modify( ground );
+    // var modifier = new THREE.BufferSubdivisionModifier();
+    // modifier.modify( ground );
+    // //Apply the modifier to our cloned geometry.
     
     var uniforms = THREE.UniformsUtils.clone(THREE.ShaderLib.standard.uniforms);
     uniforms.diffuseOriginal = uniforms.diffuse;
@@ -181,9 +182,8 @@ function updateTerrain() {
     ground.computeVertexNormals();
     ground.computeFaceNormals();
     console.log(scene);
-    if (scene.children[2] !== undefined) {
-        console.log(scene.children[2]);
-        scene.remove(scene.children[2]);
+    if (scene.children[3] !== undefined) {
+        scene.remove(scene.children[3]);
         $("#dialog").toggle("slow");
     }
     console.log(ground);
@@ -206,9 +206,11 @@ function showDialog() {
 function toggleColors() {
     if ($('#vis_type')[0].checked === true) {
         scene.fog = new THREE.FogExp2(0x001933, 0.2, 1000);
+        document.getElementsByTagName("canvas")[0].style = "background-color:#001933"
         plane.material = materialSea;
     } else {
         scene.fog = new THREE.FogExp2(0x00264d, 0, 1000);
+        document.getElementsByTagName("canvas")[0].style = "background-color:#181818"
         plane.material = materialHeight;
     }
 
