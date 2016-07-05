@@ -108,7 +108,7 @@ console.log('updated');
             }
         }
     }
-    var heightFactor = 5 / (maxHeight - minHeight);
+    var heightFactor = 6 / (maxHeight - minHeight);
     console.log((maxHeight - minHeight));
     for (var e = 0; e < columns.length; e++) {
         var values2 = columns[e].split(",");
