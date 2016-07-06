@@ -222,7 +222,7 @@ console.log('updated');
       plane.scale.z = -heightFactor;
       plane.position.y = plane.position.y + 4;
    }else{
-     plane.scale.z = heightFactor;
+     //plane.scale.z = heightFactor;
    }
     
     plane.name = 'ground';
