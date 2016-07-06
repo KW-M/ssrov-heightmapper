@@ -18,8 +18,49 @@
         background-color: #181818;
     }
     
+    #options_area .mdl-switch:not(.is-checked) div.mdl-switch__track {
+        background: rgba(0, 0, 0, 0.26);
+    }
+    #options_area .mdl-switch:not(.is-checked) div.mdl-switch__thumb {
+        background: rgb(0, 0, 0);
+    }
+    
     div.mdl-switch__track {
         background: rgba(242, 242, 242, 0.26)
+    }
+    
+    #options_area {
+     overflow: hidden;
+      border-bottom: 0px;
+      padding 0px;
+      margin: 0px;
+      height: 0px;
+      transition: height: 1s ease;
+    }
+    #options_area.open {
+      border-bottom: 1px solid rgba(0,0,0,.1);
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+      height: 151px;
+      transition: height: 1s ease;
+    }
+    
+    .mdl-card#height-scale {
+      padding: 2px 0;
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      width: 56px;
+      z-index: 10000;
+      background-color: rgba(255,255,255,0.4);
+    }
+    
+    .height-square {
+    margin: 2px 4px;
+    height: 48px;
+    width: 48px;
+    display: flex;
+    border-radius: 2px;
     }
     </style>
     <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.green-blue.min.css" />
@@ -37,35 +78,80 @@
       <span class="mdl-switch__label" style="color:white">Dive</span>
     </label>
     </div>
-    <div class="new-plot-window mdl-card mdl-shadow--2dp" id="dialog" style="position: absolute; top: 50px; left: 10px;z-index:10000 ">
-
+    <div class="new-plot-window mdl-card mdl-shadow--2dp" id="dialog" style="position: absolute; top: 50px; left: 10px;z-index:10 ">
         <textarea type="text" rows="8" id="new_data" placeholder="Paste height data here..." style="height:100%; border:0px; padding:12px"></textarea>
-
         <div class="mdl-card__actions mdl-card--border">
+            <div id="options_area" class="">
+              
+              <div style="padding-left: 10px; margin-bottom: 10px; border-bottom: 1px solid rgba(0,0,0,.1);">
+                <span style="margin-right: 10px;">Dimensions:</span>
 
-<!-- Left aligned menu below button -->
-<button id="demo-menu-lower-left" class="mdl-button mdl-js-button">
-  <img class="material-icons" src="./ic_settings_black_24px.svg"/>
-  <span>options<span>
-</button>
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:42px">
+                  <input value="24" class="mdl-textfield__input" type="number" pattern="-?[0-9]*(\.[0-9]+)?" id="sample2">
+                  <label class="mdl-textfield__label" for="sample2">Width</label>
+                  <span class="mdl-textfield__error">Input is not a number!</span>
+                </div>
+                <span> * </span>
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label"style="width:44px">
+                  <input value="24" class="mdl-textfield__input" type="num" pattern="-?[0-9]*(\.[0-9]+)?" id="sample2">
+                  <label class="mdl-textfield__label" for="sample2">Height</label>
+                  <span class="mdl-textfield__error">Input is not a number!</span>
+                </div>
+                <label class="mdl-switch mdl-js-switch" for="auto_dimensions" style="display:inline; margin: 30px; top: 12px;">
+                    <input type="checkbox" id="auto_dimensions" class="mdl-switch__input" onclick="toggleColors()">
+                    <span class="mdl-switch__label" style="margin-left: -66px; top: -20px;">Auto Find:</span>
+                </label>
+              </div>
+                <label class="mdl-switch mdl-js-switch" for="invert_data" style="margin-left: 270px;">
+                    <input type="checkbox" id="invert_data" class="mdl-switch__input" checked onclick="toggleColors()">
+                    <span class="mdl-switch__label" style="margin-left: -310px;">Invert Data</span>
+                </label>
+                <label class="mdl-switch mdl-js-switch" for="flip_rows"  style="margin-left: 270px;">
+                    <input type="checkbox" id="flip_rows" class="mdl-switch__input" checked onclick="toggleColors()">
+                    <span class="mdl-switch__label" style="margin-left: -310px;">Flip Odd Rows</span>
+                </label>
+                <label class="mdl-switch mdl-js-switch" for="smooth_plot" style="margin-left: 270px;">
+                    <input type="checkbox" id="smooth_plot" class="mdl-switch__input" onclick="toggleColors()">
+                    <span class="mdl-switch__label" style="margin-left: -310px;">Smooth Plot</span>
+                </label>
+            </div>
+            <!-- Left aligned menu below button -->
+            <button id="options_menu" class="mdl-button mdl-js-button" onclick="toggleOptions()">
+                <img class="material-icons" src="./ic_settings_black_24px.svg"/>
+                <span>options<span>
+            </button>
 
-<ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect"
-    for="demo-menu-lower-left">
-  <li class="mdl-menu__item">Some Action</li>
-  <li class="mdl-menu__item mdl-menu__item--full-bleed-divider">Another Action</li>
-  <li disabled class="mdl-menu__item">Disabled Action</li>
-  <li class="mdl-menu__item">Yet Another Action</li>
-</ul>
-<!--<label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="reverse_data" style="float:left; width: 20px; margin: 6px;">-->
-<!--  <input type="checkbox" id="reverse_data" class="mdl-checkbox__input">-->
-<!--  <span class="mdl-checkbox__label">Reverse Plot</span>-->
-<!--</label>-->
 
-    <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" onclick="updateTerrain()" style="margin: 0 auto; float: right;">
-      Plot it!
-    </a>
+            <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" onclick="updateTerrain()" style="margin: 0 auto; float: right;">
+              Plot it!
+            </a>
         </div>
     </div>
+
+<div class="mdl-card" id="height-scale">
+    <div id="height1" class="mdl-shadow--2dp height-square" style="background-color: rebeccapurple">
+      <span style="margin:auto">12</span>
+    </div>
+    <div id="height2" class="mdl-shadow--2dp height-square" style="background-color: rebeccapurple">
+      <span style="margin:auto">12</span>
+    </div>
+    <div id="height3" class="mdl-shadow--2dp height-square" style="background-color: rebeccapurple">
+      <span style="margin:auto">12</span>
+    </div>
+    <div id="height4" class="mdl-shadow--2dp height-square" style="background-color: rebeccapurple">
+      <span style="margin:auto">12</span>
+    </div>
+    <div id="height5" class="mdl-shadow--2dp height-square" style="background-color: rebeccapurple">
+      <span style="margin:auto">12</span>
+    </div>
+    <div id="height6" class="mdl-shadow--2dp height-square" style="background-color: rebeccapurple">
+      <span style="margin:auto">12</span>
+    </div>
+    <div id="height7" class="mdl-shadow--2dp height-square" style="background-color: rebeccapurple">
+      <span style="margin:auto">12</span>
+    </div>
+</div>
+    
     <script id="frag" type="x-shader/x-fragment">
 #define PHYSICAL
 uniform vec3 diffuseOriginal;
@@ -107,25 +193,25 @@ vec3 diffuse = vec3(0.9,0.9,0.9);
 #include <clipping_planes_pars_fragment>
 void main() {
   
-  vec3 white = vec3(1.0, 1.0, 1.0);
-	vec3 red = vec3(1.0, 0.0, 0.0);
-	vec3 green = vec3(0.0, 1.0, 0.0);
-	vec3 violet = vec3(0.25, 0.1, 0.75);
-	vec3 blueBlue = vec3(0.0, 0.5, 1.0);
-	vec3 blueGreen = vec3(0.0, 0.9, 0.5);
-	vec3 purple = vec3(0.8, 0.0, 0.2);
-	vec3 greenRed = vec3(1.0, 1.0, 0.0);
+  vec3 white = vec3(0.75, 0.75, 0.75);
+	vec3 red = vec3(0.75, 0.0, 0.0);
+	vec3 green = vec3(0.0, 0.75, 0.0);
+	vec3 blue = vec3(0.0, 0.2, 1.0);
+	vec3 blueGreen = vec3(0.0, 0.9, 0.75);
+	vec3 pink = vec3(0.5, 0, 0.5);
+	vec3 greenRed = vec3(0.75, 0.75, 0.0);
+	vec3 violet = vec3(0.35, 0, 0.8);
   
   float zstart = -vQPos.y - float(0.25);
   
-  vec3 gpurple = (smoothstep(0.25, 0.75, zstart + float(1)) - smoothstep(0.25, 0.75, zstart + float(0.5))) * purple;
+  vec3 gpink = (smoothstep(0.25, 0.75, zstart + float(1)) - smoothstep(0.25, 0.75, zstart + float(0.5))) * pink;
   vec3 gviolet = (smoothstep(0.25, 0.75, zstart + float(0.5)) - smoothstep(0.25, 0.75, zstart + float(0))) * violet;
-  vec3 gblueBlue = (smoothstep(0.25, 0.75, zstart - float(0)) - smoothstep(0.25, 0.75, zstart - float(0.5))) * blueBlue;
+  vec3 gblue = (smoothstep(0.25, 0.75, zstart - float(0)) - smoothstep(0.25, 0.75, zstart - float(0.5))) * blue;
   vec3 gblueGreen = (smoothstep(0.25, 0.75, zstart - float(0.5)) - smoothstep(0.25, 0.75, zstart - float(1))) * blueGreen;
   vec3 ggreen = (smoothstep(0.25, 0.75, zstart - float(1)) - smoothstep(0.25, 0.75, zstart - float(1.5))) * green;
   vec3 ggreenred = (smoothstep(0.25, 0.75, zstart - float(1.5)) - smoothstep(0.25, 0.75, zstart - float(2))) * greenRed;
   vec3 gred = (smoothstep(0.25, 0.75, zstart - float(2)) - smoothstep(0.25, 0.75, zstart - float(2.5))) * red;
-  diffuse = gpurple + gviolet + gblueBlue + gblueGreen + ggreen + ggreenred + red;
+  diffuse = gpink + gviolet + gblue + gblueGreen + ggreen + ggreenred + red;
 
 	#include <clipping_planes_fragment>
 	vec4 diffuseColor = vec4( diffuse, opacity );

@@ -1,8 +1,10 @@
 var camera, scene, renderer, controls;
+var plane, ground, heightModel;
 var depthMaterial, depthTarget, composer;
 var materialHeight, materialSea, textureGround;
-var plane, ground;
+var optOpen = false, optReversed, optSmooth, optDimensions;
 var planeflip = -Math.PI / 2;
+
 var clock = new THREE.Clock();
 
 window.addEventListener('resize', onWindowResize, false);
@@ -61,100 +63,18 @@ function init() {
       //camera.add(spotLight);
       //scene.add( camera );
     
-//First person controls---------------------------//
+//First person controls ---------------------------//
     controls = new THREE.FirstPersonControls(camera);
     controls.movementSpeed = 1;
     controls.lookSpeed = 0.1;
-
-//Debugging---------------------------------------//
-    console.log(camera); 
-    //scene.add(new THREE.AxisHelper( 5 ));
-
-// functions    
-    updateTerrain();
-    animate();
-}
-
-
-
-function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    controls.handleResize();
-}
-
-function updateTerrain() {
-console.log('updated');
-    var dataHeight = 1;
-    var dataWidth = 1;
-    var dataArray = [];
-    var maxHeight = 0;
-    var minHeight = 1000;
-    var text = $('#new_data').val() || '1,2,3,4,5,6,6\n0,2,2,3,4,5,7\n2,0,2,2,3,5,5\n2,0,0,2,3,4,4\n3,3,0,0,3,4,4\n1,1,0,0,2,4,4';
-    var columns = text.split("\n");
-    dataWidth = columns.length;
-    for (var g = 0; g < columns.length; g++) {
-        var values = columns[g].split(",");
-        if (values.length > dataHeight) {
-            dataHeight = values.length;
-        }
-        for (var b = 0; b < values.length; b++) {
-            if (values[b] > maxHeight) {
-                maxHeight = values[b];
-            }
-            if (values[b] < minHeight) {
-                minHeight = values[b];
-            }
-        }
-    }
-    var heightFactor = 6 / (maxHeight - minHeight);
-    console.log((maxHeight - minHeight));
-    for (var e = 0; e < columns.length; e++) {
-        var values2 = columns[e].split(",");
-        if (values2.length != dataHeight) {
-            var catchup = dataHeight - values2.length;
-            for (var f = 0; f < catchup; f++) {
-                values2 = values2.concat([0]);
-            }
-        }
-        dataArray = dataArray.concat(values2);
-        for (var c = 0; c < dataArray.length; c++) {
-            dataArray[c] = dataArray[c] - minHeight;
-            dataArray[c] = dataArray[c] * heightFactor;
-            
-        }
-    }
-    // var reverse = document.getElementById("reverse_data").checked;
-    // if (reverse === true) {
-    //     planeflip = Math.PI / 2;
-    // } else {
-    //     planeflip = -Math.PI / 2;
-    // }
-    console.log(dataArray);
-    console.log(dataHeight);
-    console.log(dataWidth);
-    ground = new THREE.PlaneBufferGeometry(dataHeight, dataWidth, dataHeight - 1, dataWidth - 1);
-
-    ground.dynamic = true;
-    ground.castShadow = true;
-    ground.receiveShadow = true;
-    var counter = 2;
-    for (var i = 0; i < dataArray.length; i++) {
-        ground.attributes.position.array[counter] = Number(dataArray[i]);
-        counter = counter + 3;
-    }
-    console.log(ground);
-
-
     
-    ground.verticesNeedUpdate = true;
-    ground.__dirtyNormals = true;
-    
-    // var modifier = new THREE.BufferSubdivisionModifier();
-    // modifier.modify( ground );
-    // //Apply the modifier to our cloned geometry.
-    
+//textures ---------------------------//
+    var textureLoader = new THREE.TextureLoader();
+    textureGround = textureLoader.load("./groundTexture.jpg");
+    textureGround.repeat.set(4, 4);
+    textureGround.wrapS = textureGround.wrapT = THREE.RepeatWrapping;
+     
+//materials ---------------------------//
     var uniforms = THREE.UniformsUtils.clone(THREE.ShaderLib.standard.uniforms);
     uniforms.diffuseOriginal = uniforms.diffuse;
     uniforms.reflectivity.value = 0.7;
@@ -179,21 +99,121 @@ console.log('updated');
     wireframe = new THREE.MeshBasicMaterial({
         wireframe: true,
     });
+
+//Debugging ---------------------------------------//
+    console.log(camera); 
+    //scene.add(new THREE.AxisHelper( 5 ));
+
+// functions    
+    updateTerrain();
+    animate();
+}
+
+
+
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    controls.handleResize();
+}
+
+function updateTerrain() {
+  checkOptions();
+console.log('updated');
+    var dataHeight = 1;
+    var dataWidth = 1;
+    var dataArray = [];
+    var maxHeight = 0;
+    var minHeight = 1000;
+    var text = $('#new_data').val() || '1,2,3,4,5,6,6\n0,2,2,3,4,5,7\n2,0,2,2,3,5,5\n2,0,0,2,3,4,4\n3,3,0,0,3,4,4\n1,1,0,0,2,4,4';
+    var columns = text.split("\n");
+    dataWidth = columns.length;
+    for (var g = 0; g < columns.length; g++) {
+        var values = columns[g].split(",");
+        if (values.length > dataHeight) {
+            dataHeight = values.length;
+        }
+        for (var b = 0; b < values.length; b++) {
+            if (values[b] > maxHeight) {
+                maxHeight = values[b];
+            }
+            if (values[b] < minHeight) {
+                minHeight = values[b];
+            }
+        }
+    }
+    // var heightFactor = 6 / (maxHeight - minHeight);
+    // console.log((maxHeight - minHeight));
+    for (var e = 0; e < columns.length; e++) {
+        var values2 = columns[e].split(",");
+        if (values2.length != dataHeight) {
+            var catchup = dataHeight - values2.length;
+            for (var f = 0; f < catchup; f++) {
+                values2 = values2.concat([0]);
+            }
+        }
+        dataArray = dataArray.concat(values2);
+        for (var c = 0; c < dataArray.length; c++) {
+            //dataArray[c] = dataArray[c] - minHeight;
+            //dataArray[c] = dataArray[c] * heightFactor;
+            
+        }
+    }
+    // var reverse = document.getElementById("reverse_data").checked;
+    // if (reverse === true) {
+    //     planeflip = Math.PI / 2;
+    // } else {
+    //     planeflip = -Math.PI / 2;
+    // }
+    console.log(dataArray);
+    console.log(dataHeight);
+    console.log(dataWidth);
+    ground = new THREE.PlaneBufferGeometry(dataHeight, dataWidth, dataHeight - 1, dataWidth - 1);
+
+    ground.dynamic = true;
+    ground.castShadow = true;
+    ground.receiveShadow = true;
+    var counter = 2;
+    for (var i = 0; i < dataArray.length; i++) {
+        ground.attributes.position.array[counter] = Number(dataArray[i]);
+        counter = counter + 3;
+    }
+    
+    ground.verticesNeedUpdate = true;
+    ground.__dirtyNormals = true;
+    
+    
     ground.computeVertexNormals();
     ground.computeFaceNormals();
-    console.log(scene);
+    
+    heightModel = new THREE.Geometry().fromBufferGeometry(ground);
+    console.log(heightModel);
+  
+    if(optSmooth === true){
+      var modifier = new THREE.SubdivisionModifier(3);
+      modifier.modify( heightModel );
+      //Apply the modifier to our geometry.
+    }
+    
+    
+    if ($('#vis_type')[0].checked === true) {
+      plane = new THREE.Mesh(heightModel, materialSea);
+    } else {
+      plane = new THREE.Mesh(heightModel, materialHeight);
+    }
+
+   if(optReversed === true){
+      plane.rotation.x = planeflip;
+   }
+    
+    plane.name = 'ground';
+    
     if (scene.children[3] !== undefined) {
         scene.remove(scene.children[3]);
         $("#dialog").toggle("slow");
     }
-    console.log(ground);
-
-    plane = new THREE.Mesh(ground, materialHeight);
-    console.log(planeflip);
-    plane.rotation.x = planeflip;
-    plane.name = 'ground';
     scene.add(plane);
-    console.log(scene);
     resetCamera();
 }
 
@@ -206,12 +226,22 @@ function showDialog() {
 function toggleColors() {
     if ($('#vis_type')[0].checked === true) {
         scene.fog = new THREE.FogExp2(0x001933, 0.2, 1000);
-        document.getElementsByTagName("canvas")[0].style = "background-color:#001933"
+        document.getElementsByTagName("canvas")[0].style = "background-color:#001933";
         plane.material = materialSea;
     } else {
         scene.fog = new THREE.FogExp2(0x00264d, 0, 1000);
-        document.getElementsByTagName("canvas")[0].style = "background-color:#181818"
+        document.getElementsByTagName("canvas")[0].style = "background-color:#181818";
         plane.material = materialHeight;
+    }
+
+}
+function toggleOptions() {
+    if (optOpen === false) {
+      optOpen = true;
+      $("#options_area").addClass('open');
+    } else {
+      optOpen = false;
+      $("#options_area").removeClass('open');
     }
 
 }
@@ -236,4 +266,12 @@ function render() {
 
     controls.update(clock.getDelta());
     renderer.render(scene, camera);
+}
+
+function checkOptions() {
+  optDimensions = {height:0, width:0, auto: true};
+  optReversed = document.getElementById("invert_data").checked;
+  optOddFlip = document.getElementById("flip_rows").checked; //document.getElementById("reverse_data").checked;
+  optSmooth = document.getElementById("smooth_plot").checked;
+
 }
