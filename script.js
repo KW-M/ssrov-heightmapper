@@ -1,5 +1,7 @@
 var camera, scene, renderer, controls;
 var plane, ground, heightModel, savedData = '1,2,3,4,5,6,6\n0,2,2,3,4,5,7\n2,0,2,2,3,5,5\n2,0,0,2,3,4,4\n3,3,0,0,3,4,4\n1,1,0,0,2,4,4';
+var maxHeight = 0;
+var minHeight = 1000;
 var depthMaterial, depthTarget, composer;
 var materialHeight, materialSea, textureGround;
 var optOpen = false, optReversed, optSmooth, optDimensions;
@@ -30,28 +32,28 @@ function init() {
     camera.rotation.z = 90;
 
 //lights ---------------------------------------//
-    //     hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.3 );
-				// hemiLight.color.setHSL( 0.6, 1, 0.6 );
-				// hemiLight.groundColor.setHSL( 0.095, 1, 0.75 );
-				// hemiLight.position.set( 0, 500, 0 );
-				// scene.add( hemiLight );
+        hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.3 );
+				hemiLight.color.setHSL( 0.6, 1, 0.6 );
+				hemiLight.groundColor.setHSL( 0.095, 1, 0.75 );
+				hemiLight.position.set( 0, 500, 0 );
+				scene.add( hemiLight );
 				
-				// dirLight = new THREE.DirectionalLight( 0xffffff, 0.6 );
-				// dirLight.position.set( -1, 6, 2 );
-				// dirLight.position.multiplyScalar( 500 );
+				dirLight = new THREE.DirectionalLight( 0xffffff, 0.6 );
+				dirLight.position.set( -1, 6, 2 );
+				dirLight.position.multiplyScalar( 500 );
 
-				// dirLight.castShadow = true;
-				// dirLight.shadowMapWidth = 2048;
-				// dirLight.shadowMapHeight = 2048;
-				// var d = 50;
-				// dirLight.shadowCameraLeft = -d;
-				// dirLight.shadowCameraRight = d;
-				// dirLight.shadowCameraTop = d;
-				// dirLight.shadowCameraBottom = -d;
-				// dirLight.shadowCameraFar = 3500;
-				// scene.add( dirLight );
+				dirLight.castShadow = true;
+				dirLight.shadowMapWidth = 2048;
+				dirLight.shadowMapHeight = 2048;
+				var d = 50;
+				dirLight.shadowCameraLeft = -d;
+				dirLight.shadowCameraRight = d;
+				dirLight.shadowCameraTop = d;
+				dirLight.shadowCameraBottom = -d;
+				dirLight.shadowCameraFar = 3500;
+				scene.add( dirLight );
 
-        ambientLight = new THREE.AmbientLight( 0xFFFFFF , 1); // 0.2
+        ambientLight = new THREE.AmbientLight( 0xFFFFFF , 0.3); // 0.2
         scene.add(ambientLight);
       
       //var spotLight = new THREE.SpotLight(0xffffff, 1, 200, 20, 10);
@@ -123,8 +125,6 @@ console.log('updated');
     var dataHeight = 1;
     var dataWidth = 1;
     var dataArray = [];
-    var maxHeight = 0;
-    var minHeight = 1000;
     var text = $('#new_data').val() || savedData;
     savedData = text;
     var columns = text.split("\n");
@@ -165,12 +165,7 @@ console.log('updated');
     for (var c = 0; c < dataArray.length; c++) {
         dataArray[c] = dataArray[c]-minHeight;
     }
-    // var reverse = document.getElementById("reverse_data").checked;
-    // if (reverse === true) {
-    //     planeflip = Math.PI / 2;
-    // } else {
-    //     planeflip = -Math.PI / 2;
-    // }
+
     console.log(dataArray);
     console.log(dataHeight);
     console.log(dataWidth);
@@ -210,6 +205,8 @@ console.log('updated');
       //Apply the modifier to our geometry.
     }
     
+    updateScale();
+    
     if ($('#vis_type')[0].checked === true) {
       plane = new THREE.Mesh(heightModel, materialSea);
     } else {
@@ -224,9 +221,11 @@ console.log('updated');
    }else{
      plane.scale.z = heightFactor;
    }
+   
+   
     
     plane.name = 'ground';
-    
+    console.log(scene);
     if (scene.children[3] !== undefined) {
         scene.remove(scene.children[3]);
         $("#dialog").toggle("slow");
@@ -292,4 +291,13 @@ function checkOptions() {
   optOddFlip = document.getElementById("flip_rows").checked; //document.getElementById("reverse_data").checked;
   optSmooth = document.getElementById("Smooth_Amount").value;
 
+}
+
+function updateScale() {
+  var increment = 9 / (maxHeight-minHeight);
+  var scaleValue;
+  for (var m = 0; m < 9; m++) {
+    scaleValue = minHeight + (increment * m);
+    document.getElementById("height" + m).textContent = +(Math.round(scaleValue + "e+1")  + "e-1");
+  }
 }
