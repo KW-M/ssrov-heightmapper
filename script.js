@@ -1,5 +1,5 @@
 var camera, scene, renderer, controls;
-var plane, ground, heightModel;
+var plane, ground, heightModel, savedData = '1,2,3,4,5,6,6\n0,2,2,3,4,5,7\n2,0,2,2,3,5,5\n2,0,0,2,3,4,4\n3,3,0,0,3,4,4\n1,1,0,0,2,4,4';
 var depthMaterial, depthTarget, composer;
 var materialHeight, materialSea, textureGround;
 var optOpen = false, optReversed, optSmooth, optDimensions;
@@ -30,28 +30,28 @@ function init() {
     camera.rotation.z = 90;
 
 //lights ---------------------------------------//
-        hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.3 );
-				hemiLight.color.setHSL( 0.6, 1, 0.6 );
-				hemiLight.groundColor.setHSL( 0.095, 1, 0.75 );
-				hemiLight.position.set( 0, 500, 0 );
-				scene.add( hemiLight );
+    //     hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.3 );
+				// hemiLight.color.setHSL( 0.6, 1, 0.6 );
+				// hemiLight.groundColor.setHSL( 0.095, 1, 0.75 );
+				// hemiLight.position.set( 0, 500, 0 );
+				// scene.add( hemiLight );
 				
-				dirLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
-				dirLight.position.set( -1, 6, 2 );
-				dirLight.position.multiplyScalar( 500 );
+				// dirLight = new THREE.DirectionalLight( 0xffffff, 0.6 );
+				// dirLight.position.set( -1, 6, 2 );
+				// dirLight.position.multiplyScalar( 500 );
 
-				dirLight.castShadow = true;
-				dirLight.shadowMapWidth = 2048;
-				dirLight.shadowMapHeight = 2048;
-				var d = 50;
-				dirLight.shadowCameraLeft = -d;
-				dirLight.shadowCameraRight = d;
-				dirLight.shadowCameraTop = d;
-				dirLight.shadowCameraBottom = -d;
-				dirLight.shadowCameraFar = 3500;
-				scene.add( dirLight );
+				// dirLight.castShadow = true;
+				// dirLight.shadowMapWidth = 2048;
+				// dirLight.shadowMapHeight = 2048;
+				// var d = 50;
+				// dirLight.shadowCameraLeft = -d;
+				// dirLight.shadowCameraRight = d;
+				// dirLight.shadowCameraTop = d;
+				// dirLight.shadowCameraBottom = -d;
+				// dirLight.shadowCameraFar = 3500;
+				// scene.add( dirLight );
 
-        ambientLight = new THREE.AmbientLight( 0x404040 , 0.2); // 0.2
+        ambientLight = new THREE.AmbientLight( 0xFFFFFF , 1); // 0.2
         scene.add(ambientLight);
       
       //var spotLight = new THREE.SpotLight(0xffffff, 1, 200, 20, 10);
@@ -102,8 +102,7 @@ function init() {
 
 //Debugging ---------------------------------------//
     console.log(camera); 
-    //scene.add(new THREE.AxisHelper( 5 ));
-
+    //scene.add(new THREE.AxisHelper( 10 ));
 // functions    
     updateTerrain();
     animate();
@@ -126,7 +125,8 @@ console.log('updated');
     var dataArray = [];
     var maxHeight = 0;
     var minHeight = 1000;
-    var text = $('#new_data').val() || '1,2,3,4,5,6,6\n0,2,2,3,4,5,7\n2,0,2,2,3,5,5\n2,0,0,2,3,4,4\n3,3,0,0,3,4,4\n1,1,0,0,2,4,4';
+    var text = $('#new_data').val() || savedData;
+    savedData = text;
     var columns = text.split("\n");
     dataWidth = columns.length;
     for (var g = 0; g < columns.length; g++) {
@@ -143,22 +143,27 @@ console.log('updated');
             }
         }
     }
-    // var heightFactor = 6 / (maxHeight - minHeight);
+    var heightFactor = 4 / (maxHeight - (minHeight));
+    console.log (heightFactor);
     // console.log((maxHeight - minHeight));
     for (var e = 0; e < columns.length; e++) {
         var values2 = columns[e].split(",");
         if (values2.length != dataHeight) {
             var catchup = dataHeight - values2.length;
             for (var f = 0; f < catchup; f++) {
-                values2 = values2.concat([0]);
+                values2 = values2.concat([minHeight]);
             }
         }
-        dataArray = dataArray.concat(values2);
-        for (var c = 0; c < dataArray.length; c++) {
-            //dataArray[c] = dataArray[c] - minHeight;
-            //dataArray[c] = dataArray[c] * heightFactor;
-            
+        if (optOddFlip) {
+          var isEven = e % 2;
+          if(isEven !== 0) {
+            values2.reverse();
+          }
         }
+        dataArray = dataArray.concat(values2);
+    }
+    for (var c = 0; c < dataArray.length; c++) {
+        dataArray[c] = dataArray[c]-minHeight;
     }
     // var reverse = document.getElementById("reverse_data").checked;
     // if (reverse === true) {
@@ -169,15 +174,23 @@ console.log('updated');
     console.log(dataArray);
     console.log(dataHeight);
     console.log(dataWidth);
-    ground = new THREE.PlaneBufferGeometry(dataHeight, dataWidth, dataHeight - 1, dataWidth - 1);
+    if (optDimensions.auto === true){
+      ground = new THREE.PlaneBufferGeometry(dataHeight, dataWidth, dataHeight - 1, dataWidth - 1);
+    } else {
+      ground = new THREE.PlaneBufferGeometry(optDimensions.height || dataHeight, optDimensions.width || dataWidth, dataHeight - 1, dataWidth - 1);
+    }
 
     ground.dynamic = true;
     ground.castShadow = true;
     ground.receiveShadow = true;
-    var counter = 2;
+    
+    
+    var counter = 2;//Since the buffer Geometry is one giant array, every third item (index 2) is the y value
+    console.log(ground);
     for (var i = 0; i < dataArray.length; i++) {
-        ground.attributes.position.array[counter] = Number(dataArray[i]);
-        counter = counter + 3;
+      console.log(i + ", value:" + dataArray[i]);
+        ground.attributes.position.array[counter] = dataArray[i];
+        counter = counter + 3;//Since the buffer Geometry is one giant array, every third item is the y value
     }
     
     ground.verticesNeedUpdate = true;
@@ -189,6 +202,7 @@ console.log('updated');
     
     heightModel = new THREE.Geometry().fromBufferGeometry(ground);
     console.log(heightModel);
+    
   
     if(optSmooth !== ""){
       var modifier = new THREE.SubdivisionModifier(optSmooth);
@@ -196,15 +210,19 @@ console.log('updated');
       //Apply the modifier to our geometry.
     }
     
-    
     if ($('#vis_type')[0].checked === true) {
       plane = new THREE.Mesh(heightModel, materialSea);
     } else {
       plane = new THREE.Mesh(heightModel, materialHeight);
     }
-
+    plane.rotation.x = -Math.PI / 2;
+    console.log(minHeight);
+   console.log(plane);//
    if(optReversed === true){
-      plane.rotation.x = planeflip;
+      plane.scale.z = -heightFactor;
+      plane.position.y = plane.position.y + 4;
+   }else{
+     plane.scale.z = heightFactor;
    }
     
     plane.name = 'ground';
@@ -269,7 +287,7 @@ function render() {
 }
 
 function checkOptions() {
-  optDimensions = {height:0, width:0, auto: true};
+  optDimensions = {height: document.getElementById("HeightV"), width: document.getElementById("WidthV").value, auto: document.getElementById("auto_dimensions").checked};
   optReversed = document.getElementById("invert_data").checked;
   optOddFlip = document.getElementById("flip_rows").checked; //document.getElementById("reverse_data").checked;
   optSmooth = document.getElementById("Smooth_Amount").value;

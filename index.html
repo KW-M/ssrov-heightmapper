@@ -87,18 +87,18 @@
                 <span style="margin-right: 10px;">Dimensions:</span>
 
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:42px">
-                  <input value="24" class="mdl-textfield__input" type="number" pattern="-?[0-9]*(\.[0-9]+)?" id="sample2">
-                  <label class="mdl-textfield__label" for="sample2">Width</label>
+                  <input value="24" class="mdl-textfield__input" type="number" pattern="-?[0-9]*(\.[0-9]+)?" id="WidthV">
+                  <label class="mdl-textfield__label" for="WidthV">Width</label>
                   <span class="mdl-textfield__error">Input is not a number!</span>
                 </div>
                 <span> * </span>
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label"style="width:44px">
-                  <input value="24" class="mdl-textfield__input" type="num" pattern="-?[0-9]*(\.[0-9]+)?" id="sample2">
-                  <label class="mdl-textfield__label" for="sample2">Height</label>
+                  <input value="24" class="mdl-textfield__input" type="num" pattern="-?[0-9]*(\.[0-9]+)?" id="HeightV">
+                  <label class="mdl-textfield__label" for="HeightV">Height</label>
                   <span class="mdl-textfield__error">Input is not a number!</span>
                 </div>
                 <label class="mdl-switch mdl-js-switch" for="auto_dimensions" style="display:inline; margin: 30px; top: 12px;">
-                    <input type="checkbox" id="auto_dimensions" class="mdl-switch__input" onclick="toggleColors()">
+                    <input type="checkbox" id="auto_dimensions" class="mdl-switch__input" checked>
                     <span class="mdl-switch__label" style="margin-left: -66px; top: -20px;">Auto Find:</span>
                 </label>
               </div>
@@ -114,9 +114,9 @@
                 <span class="mdl-switch__label" style="">Smooth Plot
                 
                 <div class="mdl-textfield mdl-js-textfield" style="width: 22px; margin-left: 161px; padding: 0px;">
-                  <input class="mdl-textfield__input" type="number" pattern="-?[0-9]*(\.[0-9]+)?" id="Smooth_Amount">
+                  <input class="mdl-textfield__input" type="text" value="0" maxlength="1" pattern="([0-6])" id="Smooth_Amount">
                   <label class="mdl-textfield__label" style="left:10px" >Amount</label>
-                  <span class="mdl-textfield__error">Input is not a number!</span>
+                  <span class="mdl-textfield__error">Input is too large a  number!</span>
                 </div>
                 </span>
 
@@ -142,19 +142,19 @@
     <div id="height2" class="mdl-shadow--2dp height-square" style="background-color: rebeccapurple">
       <span style="margin:auto">5</span>
     </div>
-    <div id="height3" class="mdl-shadow--2dp height-square" style="background-color: rebeccapurple">
+    <div id="height3" class="mdl-shadow--2dp height-square" style="background-color: hsla(120,100%,50%,1);">
       <span style="margin:auto">4</span>
     </div>
-    <div id="height4" class="mdl-shadow--2dp height-square" style="background-color: rebeccapurple">
+    <div id="height4" class="mdl-shadow--2dp height-square" style="background-color: hsla(233,100%,50%,1);">
       <span style="margin:auto">3</span>
     </div>
-    <div id="height5" class="mdl-shadow--2dp height-square" style="background-color: rebeccapurple">
+    <div id="height5" class="mdl-shadow--2dp height-square" style="background-color: hsla(239,100%,50%,1);">
       <span style="margin:auto">2</span>
     </div>
-    <div id="height6" class="mdl-shadow--2dp height-square" style="background-color: rebeccapurple">
+    <div id="height6" class="mdl-shadow--2dp height-square" style="background-color: hsla(340,50%,50%,1);">
       <span style="margin:auto">1</span>
     </div>
-    <div id="height7" class="mdl-shadow--2dp height-square" style="background-color: rebeccapurple">
+    <div id="height7" class="mdl-shadow--2dp height-square" style="background-color: hsla(300,100%,50%,1);">
       <span style="margin:auto">0</span>
     </div>
 </div>
@@ -203,11 +203,14 @@ void main() {
   vec3 white = vec3(0.75, 0.75, 0.75);
 	vec3 red = vec3(0.75, 0.0, 0.0);
 	vec3 green = vec3(0.0, 0.75, 0.0);
-	vec3 blue = vec3(0.0, 0.2, 1.0);
+	vec3 blue = vec3(0.0, 0.1, 0.75);
 	vec3 blueGreen = vec3(0.0, 0.9, 0.75);
-	vec3 pink = vec3(0.5, 0, 0.5);
+	vec3 pink = vec3(0.9, 0.3, 0.5);
 	vec3 greenRed = vec3(0.75, 0.75, 0.0);
-	vec3 violet = vec3(0.35, 0, 0.8);
+	vec3 orange = vec3(0.8, 0.4, 0.0);
+	vec3 violet = vec3(0.5, 0, 0.5);
+	vec3 darkRed = vec3(0.4, 0.0, 0.1);
+	vec3 blueGrey = vec3(0.2, 0.2, 0.3);
   
   float zstart = -vQPos.y - float(0.25);
   
@@ -217,8 +220,11 @@ void main() {
   vec3 gblueGreen = (smoothstep(0.25, 0.75, zstart - float(0.5)) - smoothstep(0.25, 0.75, zstart - float(1))) * blueGreen;
   vec3 ggreen = (smoothstep(0.25, 0.75, zstart - float(1)) - smoothstep(0.25, 0.75, zstart - float(1.5))) * green;
   vec3 ggreenred = (smoothstep(0.25, 0.75, zstart - float(1.5)) - smoothstep(0.25, 0.75, zstart - float(2))) * greenRed;
-  vec3 gred = (smoothstep(0.25, 0.75, zstart - float(2)) - smoothstep(0.25, 0.75, zstart - float(2.5))) * red;
-  diffuse = gpink + gviolet + gblue + gblueGreen + ggreen + ggreenred + red;
+  vec3 gorange = (smoothstep(0.25, 0.75, zstart - float(2)) - smoothstep(0.25, 0.75, zstart - float(2.5))) * orange;
+  vec3 gred = (smoothstep(0.25, 0.75, zstart - float(2.5)) - smoothstep(0.25, 0.75, zstart - float(3))) * red;
+  vec3 gdarkRed = (smoothstep(0.25, 0.75, zstart - float(3)) - smoothstep(0.25, 0.75, zstart - float(3.5))) * darkRed;
+  vec3 gblueGrey = (smoothstep(0.25, 0.75, zstart - float(3.5)) - smoothstep(0.25, 0.75, zstart - float(4))) * blueGrey;
+  diffuse = gpink + gviolet + gblue + gblueGreen + ggreen + ggreenred + gorange + gred + gdarkRed + gblueGrey;
 
 	#include <clipping_planes_fragment>
 	vec4 diffuseColor = vec4( diffuse, opacity );
