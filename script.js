@@ -190,8 +190,8 @@ console.log('updated');
     heightModel = new THREE.Geometry().fromBufferGeometry(ground);
     console.log(heightModel);
   
-    if(optSmooth === true){
-      var modifier = new THREE.SubdivisionModifier(3);
+    if(optSmooth !== ""){
+      var modifier = new THREE.SubdivisionModifier(optSmooth);
       modifier.modify( heightModel );
       //Apply the modifier to our geometry.
     }
@@ -272,6 +272,6 @@ function checkOptions() {
   optDimensions = {height:0, width:0, auto: true};
   optReversed = document.getElementById("invert_data").checked;
   optOddFlip = document.getElementById("flip_rows").checked; //document.getElementById("reverse_data").checked;
-  optSmooth = document.getElementById("smooth_plot").checked;
+  optSmooth = document.getElementById("Smooth_Amount").value;
 
 }

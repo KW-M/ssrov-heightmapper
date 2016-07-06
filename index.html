@@ -31,18 +31,18 @@
     
     #options_area {
      overflow: hidden;
-      border-bottom: 0px;
+      border-bottom: 0;
       padding 0px;
       margin: 0px;
       height: 0px;
-      transition: height: 1s ease;
+      transition: height 0.8s ease;
     }
     #options_area.open {
       border-bottom: 1px solid rgba(0,0,0,.1);
       padding-bottom: 10px;
       margin-bottom: 10px;
       height: 151px;
-      transition: height: 1s ease;
+      transition:  height 0.8s ease;
     }
     
     .mdl-card#height-scale {
@@ -103,17 +103,24 @@
                 </label>
               </div>
                 <label class="mdl-switch mdl-js-switch" for="invert_data" style="margin-left: 270px;">
-                    <input type="checkbox" id="invert_data" class="mdl-switch__input" checked onclick="toggleColors()">
+                    <input type="checkbox" id="invert_data" class="mdl-switch__input" checked>
                     <span class="mdl-switch__label" style="margin-left: -310px;">Invert Data</span>
                 </label>
                 <label class="mdl-switch mdl-js-switch" for="flip_rows"  style="margin-left: 270px;">
-                    <input type="checkbox" id="flip_rows" class="mdl-switch__input" checked onclick="toggleColors()">
+                    <input type="checkbox" id="flip_rows" class="mdl-switch__input" checked>
                     <span class="mdl-switch__label" style="margin-left: -310px;">Flip Odd Rows</span>
                 </label>
-                <label class="mdl-switch mdl-js-switch" for="smooth_plot" style="margin-left: 270px;">
-                    <input type="checkbox" id="smooth_plot" class="mdl-switch__input" onclick="toggleColors()">
-                    <span class="mdl-switch__label" style="margin-left: -310px;">Smooth Plot</span>
-                </label>
+
+                <span class="mdl-switch__label" style="">Smooth Plot
+                
+                <div class="mdl-textfield mdl-js-textfield" style="width: 22px; margin-left: 161px; padding: 0px;">
+                  <input class="mdl-textfield__input" type="number" pattern="-?[0-9]*(\.[0-9]+)?" id="Smooth_Amount">
+                  <label class="mdl-textfield__label" style="left:10px" >Amount</label>
+                  <span class="mdl-textfield__error">Input is not a number!</span>
+                </div>
+                </span>
+
+
             </div>
             <!-- Left aligned menu below button -->
             <button id="options_menu" class="mdl-button mdl-js-button" onclick="toggleOptions()">
@@ -130,25 +137,25 @@
 
 <div class="mdl-card" id="height-scale">
     <div id="height1" class="mdl-shadow--2dp height-square" style="background-color: rebeccapurple">
-      <span style="margin:auto">12</span>
+      <span style="margin:auto">6</span>
     </div>
     <div id="height2" class="mdl-shadow--2dp height-square" style="background-color: rebeccapurple">
-      <span style="margin:auto">12</span>
+      <span style="margin:auto">5</span>
     </div>
     <div id="height3" class="mdl-shadow--2dp height-square" style="background-color: rebeccapurple">
-      <span style="margin:auto">12</span>
+      <span style="margin:auto">4</span>
     </div>
     <div id="height4" class="mdl-shadow--2dp height-square" style="background-color: rebeccapurple">
-      <span style="margin:auto">12</span>
+      <span style="margin:auto">3</span>
     </div>
     <div id="height5" class="mdl-shadow--2dp height-square" style="background-color: rebeccapurple">
-      <span style="margin:auto">12</span>
+      <span style="margin:auto">2</span>
     </div>
     <div id="height6" class="mdl-shadow--2dp height-square" style="background-color: rebeccapurple">
-      <span style="margin:auto">12</span>
+      <span style="margin:auto">1</span>
     </div>
     <div id="height7" class="mdl-shadow--2dp height-square" style="background-color: rebeccapurple">
-      <span style="margin:auto">12</span>
+      <span style="margin:auto">0</span>
     </div>
 </div>
     
