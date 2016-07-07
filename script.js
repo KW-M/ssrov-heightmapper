@@ -103,8 +103,8 @@ function init() {
     });
 
 //Debugging ---------------------------------------//
-    console.log(camera); 
     //scene.add(new THREE.AxisHelper( 10 ));
+    
 // functions    
     updateTerrain();
     animate();
@@ -121,7 +121,6 @@ function onWindowResize() {
 
 function updateTerrain() {
   checkOptions();
-console.log('updated');
     var dataHeight = 1;
     var dataWidth = 1;
     var dataArray = [];
@@ -143,9 +142,8 @@ console.log('updated');
             }
         }
     }
-    var heightFactor = 5 / (maxHeight - (minHeight));
-    console.log (heightFactor);
-    // console.log((maxHeight - minHeight));
+    updateScale();
+    var heightFactor = 4 / (maxHeight - (minHeight));
     for (var e = 0; e < columns.length; e++) {
         var values2 = columns[e].split(",");
         if (values2.length != dataHeight) {
@@ -166,9 +164,6 @@ console.log('updated');
         dataArray[c] = dataArray[c]-minHeight;
     }
 
-    console.log(dataArray);
-    console.log(dataHeight);
-    console.log(dataWidth);
     if (optDimensions.auto === true){
       ground = new THREE.PlaneBufferGeometry(dataHeight, dataWidth, dataHeight - 1, dataWidth - 1);
     } else {
@@ -181,9 +176,7 @@ console.log('updated');
     
     
     var counter = 2;//Since the buffer Geometry is one giant array, every third item (index 2) is the y value
-    console.log(ground);
     for (var i = 0; i < dataArray.length; i++) {
-      console.log(i + ", value:" + dataArray[i]);
         ground.attributes.position.array[counter] = dataArray[i];
         counter = counter + 3;//Since the buffer Geometry is one giant array, every third item is the y value
     }
@@ -196,7 +189,6 @@ console.log('updated');
     ground.computeFaceNormals();
     
     heightModel = new THREE.Geometry().fromBufferGeometry(ground);
-    console.log(heightModel);
     
   
     if(optSmooth !== ""){
@@ -205,7 +197,7 @@ console.log('updated');
       //Apply the modifier to our geometry.
     }
     
-    updateScale();
+
     
     if ($('#vis_type')[0].checked === true) {
       plane = new THREE.Mesh(heightModel, materialSea);
@@ -213,8 +205,6 @@ console.log('updated');
       plane = new THREE.Mesh(heightModel, materialHeight);
     }
     plane.rotation.x = -Math.PI / 2;
-    console.log(minHeight);
-   console.log(plane);//
    if(optReversed === true){
       plane.scale.z = -heightFactor;
       plane.position.y = plane.position.y + 4;
@@ -225,7 +215,6 @@ console.log('updated');
    
     
     plane.name = 'ground';
-    console.log(scene);
     if (scene.children[3] !== undefined) {
         scene.remove(scene.children[3]);
         $("#dialog").toggle("slow");
@@ -235,7 +224,6 @@ console.log('updated');
 }
 
 function showDialog() {
-    console.log('showing');
     $("#dialog").toggle("slow");
     $("#new_data").val('');
 }
@@ -269,24 +257,19 @@ function animate() {
 }
 
 function resetCamera() {
-
-    console.log(controls);
     controls.object.position.x = 0;
     controls.object.position.y = 3;
     controls.object.position.z = -1;
     controls.object.rotation.y = 0; // Rotates Yaw Object
-    console.log(controls.object);
 }
 
 function render() {
-    //console.log(camera.rotation);
-
     controls.update(clock.getDelta());
     renderer.render(scene, camera);
 }
 
 function checkOptions() {
-  optDimensions = {height: document.getElementById("HeightV"), width: document.getElementById("WidthV").value, auto: document.getElementById("auto_dimensions").checked};
+  optDimensions = {height: document.getElementById("HeightV").value, width: document.getElementById("WidthV").value, auto: document.getElementById("auto_dimensions").checked};
   optReversed = document.getElementById("invert_data").checked;
   optOddFlip = document.getElementById("flip_rows").checked; //document.getElementById("reverse_data").checked;
   optSmooth = document.getElementById("Smooth_Amount").value;
