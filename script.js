@@ -1,7 +1,7 @@
 var camera, scene, renderer, controls;
 var plane, ground, heightModel, savedData = '1,2,3,4,5,6,6\n0,2,2,3,4,5,7\n2,0,2,2,3,5,5\n2,0,0,2,3,4,4\n3,3,0,0,3,4,4\n1,1,0,0,2,4,4';
-var maxHeight = 0;
-var minHeight = 1000;
+var maxHeight;
+var minHeight;
 var depthMaterial, depthTarget, composer;
 var materialHeight, materialSea, textureGround;
 var optOpen = false, optReversed, optSmooth, optDimensions;
@@ -120,20 +120,27 @@ function onWindowResize() {
 }
 
 function updateTerrain() {
+  console.log('updated');
   checkOptions();
     var dataHeight = 1;
     var dataWidth = 1;
     var dataArray = [];
+      minHeight = 1000;
+  maxHeight = 0;
     var text = $('#new_data').val() || savedData;
     savedData = text;
     var columns = text.split("\n");
+    console.log(columns);
     dataWidth = columns.length;
     for (var g = 0; g < columns.length; g++) {
         var values = columns[g].split(",");
         if (values.length > dataHeight) {
             dataHeight = values.length;
         }
+        
         for (var b = 0; b < values.length; b++) {
+          console.log(values[b]);
+          console.log(minHeight+", max:"+maxHeight);
             if (values[b] > maxHeight) {
                 maxHeight = values[b];
             }
