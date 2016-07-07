@@ -32,7 +32,7 @@ function init() {
     camera.rotation.z = 90;
 
 //lights ---------------------------------------//
-        hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.3 );
+        hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.4 );
 				hemiLight.color.setHSL( 0.6, 1, 0.6 );
 				hemiLight.groundColor.setHSL( 0.095, 1, 0.75 );
 				hemiLight.position.set( 0, 500, 0 );
@@ -125,22 +125,19 @@ function updateTerrain() {
     var dataHeight = 1;
     var dataWidth = 1;
     var dataArray = [];
-      minHeight = 1000;
-  maxHeight = 0;
+    minHeight = 1000;
+    maxHeight = 0;
     var text = $('#new_data').val() || savedData;
     savedData = text;
-    var columns = text.split("\n");
+    var columns = text.split(optDelimiters.rows || "\n");
     console.log(columns);
     dataWidth = columns.length;
     for (var g = 0; g < columns.length; g++) {
-        var values = columns[g].split(",");
+        var values = columns[g].split(optDelimiters.columns || ",");
         if (values.length > dataHeight) {
             dataHeight = values.length;
         }
-        
         for (var b = 0; b < values.length; b++) {
-          console.log(values[b]);
-          console.log(minHeight+", max:"+maxHeight);
             if (values[b] > maxHeight) {
                 maxHeight = values[b];
             }
@@ -152,7 +149,7 @@ function updateTerrain() {
     updateScale();
     var heightFactor = 4 / (maxHeight - (minHeight));
     for (var e = 0; e < columns.length; e++) {
-        var values2 = columns[e].split(",");
+        var values2 = columns[e].split(optDelimiters.columns || ",");
         if (values2.length != dataHeight) {
             var catchup = dataHeight - values2.length;
             for (var f = 0; f < catchup; f++) {
@@ -277,6 +274,7 @@ function render() {
 
 function checkOptions() {
   optDimensions = {height: document.getElementById("HeightV").value, width: document.getElementById("WidthV").value, auto: document.getElementById("auto_dimensions").checked};
+  optDelimiters = {rows: document.getElementById("Delim_Row").value, columns: document.getElementById("Delim_Column").value};
   optReversed = document.getElementById("invert_data").checked;
   optOddFlip = document.getElementById("flip_rows").checked; //document.getElementById("reverse_data").checked;
   optSmooth = document.getElementById("Smooth_Amount").value;
@@ -284,10 +282,12 @@ function checkOptions() {
 }
 
 function updateScale() {
-  var increment = 9 / (maxHeight-minHeight);
+  
+  var increment = (Number(maxHeight)-Number(minHeight)) / 9;
   var scaleValue;
-  for (var m = 0; m < 9; m++) {
-    scaleValue = minHeight + (increment * m);
-    document.getElementById("height" + m).textContent = +(Math.round(scaleValue + "e+1")  + "e-1");
+  for (var m = 1; m < 10; m++) {
+    scaleValue = Number(minHeight) + (Number(increment) * Number(m));
+    console.log(maxHeight+","+minHeight+"+"+increment+"X"+m+"="+scaleValue);
+    document.getElementById("height" + m).textContent = +((Math.round(scaleValue + "e+1")  + "e-1"));
   }
 }
