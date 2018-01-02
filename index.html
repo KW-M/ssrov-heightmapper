@@ -2,152 +2,162 @@
 <html lang="en">
 
 <head>
-    <title>Height Mapper</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <style>
+  <title>Height Mapper</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <style>
     body {
-        margin: 0px;
-        background-color: #000000;
-        overflow: hidden;
+      margin: 0;
+      overflow: hidden;
+      background-color: #000000;
     }
-    
+
     canvas {
-        width: 100%;
-        height: 100%;
-        background-color: #181818;
+      width: 100%;
+      height: 100%;
+      background-color: #181818;
     }
-    
+
     #options_area .mdl-switch:not(.is-checked) div.mdl-switch__track {
-        background: rgba(0, 0, 0, 0.26);
+      background: rgba(0, 0, 0, 0.26);
     }
+
     #options_area .mdl-switch:not(.is-checked) div.mdl-switch__thumb {
-        background: rgb(0, 0, 0);
+      background: rgb(0, 0, 0);
     }
-    
+
     div.mdl-switch__track {
-        background: rgba(242, 242, 242, 0.26)
+      background: rgba(242, 242, 242, 0.26);
     }
-    
+
     #options_area {
-     overflow: hidden;
-      border-bottom: 0;
-      padding 0px;
-      margin: 0px;
-      height: 0px;
+      margin: 0;
+      padding: 0;
+      height: 0;
+      overflow: hidden;
+      border-bottom: none;
       transition: height 0.8s ease;
     }
+
     #options_area.open {
-      border-bottom: 1px solid rgba(0,0,0,.1);
-      padding-bottom: 10px;
       margin-bottom: 10px;
+      padding-bottom: 10px;
       height: 183px;
-      transition:  height 0.8s ease;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      transition: height 0.8s ease;
     }
-    
+
     .mdl-card#height-scale {
-      padding: 2px 0;
       position: absolute;
-      bottom: 12px;
+      padding: 2px 0;
       right: 12px;
+      bottom: 12px;
       width: 56px;
       z-index: 10000;
-      background-color: rgba(255,255,255,0.4);
+      background-color: rgba(255, 255, 255, 0.4);
+      pointer-events: none;
     }
-    
+
     .height-square {
-    margin: 2px 4px;
-    height: 35px;
-    font-style: oblique;
-    font-weight: 800;
-    width: 48px;
-    display: flex;
-    border-radius: 2px;
+      display: flex;
+      margin: 2px 4px;
+      width: 48px;
+      height: 35px;
+      border-radius: 2px;
+      font-weight: 800;
+      font-style: oblique;
     }
-    </style>
-    <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.green-blue.min.css" />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-    <script defer src="https://code.getmdl.io/1.1.3/material.min.js"></script>
+  </style>
+  <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.green-blue.min.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+  <script defer src="https://code.getmdl.io/1.1.3/material.min.js"></script>
 </head>
 
 <body>
-    <button class="mdl-button mdl-js-button mdl-button--primary" id="new_plot" style="top: 10px; left: 10px; position:absolute; color:white" onclick="showDialog()">New Plot</button>
-    <div style="top: 16px; right: 12px; position:absolute; width: 98px;">
+  <div style="color: white;position: absolute;bottom: 0; left: 50%; transform: translateX(-50%);pointer-events: none">Click to look around with your mouse. Use the arrow keys to move. Press return/enter to reset camera.</div>
+  <button class="mdl-button mdl-js-button mdl-button--primary" id="new_plot" style="top: 10px; left: 10px; position:absolute; color:white"
+    onclick="showDialog()">New Plot</button>
+  <div style="top: 16px; right: 12px; position:absolute; width: 98px;">
 
     <label class="mdl-switch mdl-js-switch" for="vis_type">
-	    <span class="mdl-switch__label" style="color:white; margin-left: -178px; margin-right: 60px;">Bathymetry Map</span>
+      <span class="mdl-switch__label" style="color:white; margin-left: -178px; margin-right: 60px;">Bathymetry Map</span>
       <input type="checkbox" id="vis_type" class="mdl-switch__input" onclick="toggleColors()">
       <span class="mdl-switch__label" style="color:white">Dive</span>
     </label>
-    </div>
-    <div class="new-plot-window mdl-card mdl-shadow--2dp" id="dialog" style="position: absolute; top: 50px; left: 10px;z-index:10 ">
-        <textarea type="text" rows="8" id="new_data" placeholder="Paste height data here..." style="height:100%; border:0px; padding:12px"></textarea>
-        <div class="mdl-card__actions mdl-card--border">
-            <div id="options_area" class="">
-              
-              <div style="padding-left: 10px; margin-bottom: 10px; border-bottom: 1px solid rgba(0,0,0,.1);">
-                <span style="margin-right: 10px;">Dimensions:</span>
+  </div>
+  <div class="new-plot-window mdl-card mdl-shadow--2dp" id="dialog" style="position: absolute; top: 50px; left: 10px;z-index:10 ">
+    <textarea type="text" rows="8" id="new_data" placeholder="Paste&nbsp;height&nbsp;data&nbsp;here...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;For&nbsp;example:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1,2,1,2,3&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2,3,3,2,3&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2,3,3,4,2&nbsp;"
+      style="height:100%; border:0px; padding:12px"></textarea>
+    <div class="mdl-card__actions mdl-card--border">
+      <div id="options_area" class="">
 
-                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:42px">
-                  <input value="24" class="mdl-textfield__input" type="number" pattern="-?[0-9]*(\.[0-9]+)?" id="WidthV">
-                  <label class="mdl-textfield__label" for="WidthV">Width</label>
-                  <span class="mdl-textfield__error">Input is not a number!</span>
-                </div>
-                <span> * </span>
-                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label"style="width:44px">
-                  <input value="24" class="mdl-textfield__input" type="num" pattern="-?[0-9]*(\.[0-9]+)?" id="HeightV">
-                  <label class="mdl-textfield__label" for="HeightV">Height</label>
-                  <span class="mdl-textfield__error">Input is not a number!</span>
-                </div>
-                <label class="mdl-switch mdl-js-switch" for="auto_dimensions" style="display:inline; margin: 30px; top: 12px;">
-                    <input type="checkbox" id="auto_dimensions" class="mdl-switch__input" checked>
-                    <span class="mdl-switch__label" style="margin-left: -66px; top: -20px;">Auto Find:</span>
-                </label>
-              </div>
-                <span class="mdl-switch__label" style="left: 10px;">Delimeters: 
-                <div class="mdl-textfield mdl-js-textfield" style="width: 60px; margin: 0 12px; padding: 0px;">
-                  <input class="mdl-textfield__input" type="text" value="" id="Delim_Column">
-                  <label class="mdl-textfield__label">Columns</label>
-                </div>
-                <div class="mdl-textfield mdl-js-textfield" style="width: 60px; margin: 0 12px; padding: 0px;">
-                  <input class="mdl-textfield__input" type="text" value="" id="Delim_Row">
-                  <label class="mdl-textfield__label" >Rows</label>
-                </div>
-                </span>
-                <label class="mdl-switch mdl-js-switch" for="invert_data" style="margin-left: 270px;">
-                    <input type="checkbox" id="invert_data" class="mdl-switch__input" checked>
-                    <span class="mdl-switch__label" style="margin-left: -310px;">Invert Data</span>
-                </label>
-                <label class="mdl-switch mdl-js-switch" for="flip_rows"  style="margin-left: 270px;">
-                    <input type="checkbox" id="flip_rows" class="mdl-switch__input" checked>
-                    <span class="mdl-switch__label" style="margin-left: -310px;">Flip Odd Rows</span>
-                </label>
+        <div style="padding-left: 10px; margin-bottom: 10px; border-bottom: 1px solid rgba(0,0,0,.1);">
+          <span style="margin-right: 10px;">Dimensions:</span>
 
-                <span class="mdl-switch__label" style="left: 10px;">Smooth Plot
-                
-                <div class="mdl-textfield mdl-js-textfield" style="width: 22px; margin-left: 161px; padding: 0px;">
-                  <input class="mdl-textfield__input" type="text" value="0" maxlength="1" pattern="([0-6])" id="Smooth_Amount">
-                  <label class="mdl-textfield__label" style="left:10px" >Amount</label>
-                  <span class="mdl-textfield__error">Input is too large a  number!</span>
-                </div>
-                </span>
-
-
-            </div>
-            <!-- Left aligned menu below button -->
-            <button id="options_menu" class="mdl-button mdl-js-button" onclick="toggleOptions()">
-                <img class="material-icons" src="./ic_settings_black_24px.svg"/>
-                <span>options<span>
-            </button>
-
-
-            <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" onclick="updateTerrain()" style="margin: 0 auto; float: right;">
-              Plot it!
-            </a>
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:42px">
+            <input value="24" class="mdl-textfield__input" type="number" pattern="-?[0-9]*(\.[0-9]+)?" id="WidthV">
+            <label class="mdl-textfield__label" for="WidthV">Width</label>
+            <span class="mdl-textfield__error">Input is not a number!</span>
+          </div>
+          <span> * </span>
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:44px">
+            <input value="24" class="mdl-textfield__input" type="num" pattern="-?[0-9]*(\.[0-9]+)?" id="HeightV">
+            <label class="mdl-textfield__label" for="HeightV">Height</label>
+            <span class="mdl-textfield__error">Input is not a number!</span>
+          </div>
+          <label class="mdl-switch mdl-js-switch" for="auto_dimensions" style="display:inline; margin: 30px; top: 12px;">
+            <input type="checkbox" id="auto_dimensions" class="mdl-switch__input" checked>
+            <span class="mdl-switch__label" style="margin-left: -66px; top: -20px;">Auto Find:</span>
+          </label>
         </div>
-    </div>
+        <span class="mdl-switch__label" style="left: 10px;">Delimeters:
+          <div class="mdl-textfield mdl-js-textfield" style="width: 60px; margin: 0 12px; padding: 0px;">
+            <input class="mdl-textfield__input" type="text" value="" id="Delim_Column">
+            <label class="mdl-textfield__label">Columns</label>
+          </div>
+          <div class="mdl-textfield mdl-js-textfield" style="width: 60px; margin: 0 12px; padding: 0px;">
+            <input class="mdl-textfield__input" type="text" value="" id="Delim_Row">
+            <label class="mdl-textfield__label">Rows</label>
+          </div>
+        </span>
+        <label class="mdl-switch mdl-js-switch" for="invert_data" style="margin-left: 270px;">
+          <input type="checkbox" id="invert_data" class="mdl-switch__input">
+          <span class="mdl-switch__label" style="margin-left: -310px;">Invert Data</span>
+        </label>
+        <label class="mdl-switch mdl-js-switch" for="flip_rows" style="margin-left: 270px;">
+          <input type="checkbox" id="flip_rows" class="mdl-switch__input">
+          <span class="mdl-switch__label" style="margin-left: -310px;">Flip Odd Rows</span>
+        </label>
 
-<div class="mdl-card" id="height-scale">
+        <span class="mdl-switch__label" style="left: 10px;">Smooth Plot
+
+          <div class="mdl-textfield mdl-js-textfield" style="width: 22px; margin-left: 161px; padding: 0px;">
+            <input class="mdl-textfield__input" type="text" value="0" maxlength="1" pattern="([0-6])" id="Smooth_Amount">
+            <label class="mdl-textfield__label" style="left:10px">Amount</label>
+            <span class="mdl-textfield__error">Input is too large a number!</span>
+          </div>
+        </span>
+
+
+      </div>
+      <!-- Left aligned menu below button -->
+      <button id="options_menu" class="mdl-button mdl-js-button" onclick="toggleOptions()">
+        <img class="material-icons" src="./ic_settings_black_24px.svg" />
+        <span>options
+          <span>
+      </button>
+
+
+      <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" onclick="updateTerrain()" style="margin: 0 auto; float: right;">
+        Plot it!
+      </a>
+    </div>
+  </div>
+
+  <div class="mdl-card" id="height-scale">
     <div class="mdl-shadow--2dp height-square" style="background-color: rgb(102,0,25);">
       <span id="height9" style="margin:auto">.</span>
     </div>
@@ -163,7 +173,7 @@
     <div class="mdl-shadow--2dp height-square" style="background-color: rgb(0,191,0);">
       <span id="height5" style="margin:auto">.</span>
     </div>
-    <div  class="mdl-shadow--2dp height-square" style="background-color: rgb(0,229,191);">
+    <div class="mdl-shadow--2dp height-square" style="background-color: rgb(0,229,191);">
       <span id="height4" style="margin:auto">.</span>
     </div>
     <div class="mdl-shadow--2dp height-square" style="background-color: rgb(0,25,191)">
@@ -175,9 +185,9 @@
     <div class="mdl-shadow--2dp height-square" style="background-color: rgb(229,76,128);">
       <span id="height1" style="margin:auto">.</span>
     </div>
-</div>
-    
-    <script id="frag" type="x-shader/x-fragment">
+  </div>
+
+  <script id="frag" type="x-shader/x-fragment">
 #define PHYSICAL
 uniform vec3 diffuseOriginal;
 uniform vec3 emissive;
@@ -217,7 +227,7 @@ vec3 diffuse = vec3(0.9,0.9,0.9);
 #include <logdepthbuf_pars_fragment>
 #include <clipping_planes_pars_fragment>
 void main() {
-  
+
   vec3 white = vec3(0.75, 0.75, 0.75);
 	vec3 red = vec3(0.75, 0.0, 0.0);
 	vec3 green = vec3(0.0, 0.75, 0.0);
@@ -229,9 +239,9 @@ void main() {
 	vec3 violet = vec3(0.5, 0, 0.5);
 	vec3 darkRed = vec3(0.4, 0.0, 0.1);
 	vec3 blueGrey = vec3(0.2, 0.2, 0.3);
-  
+
   float zstart = -vQPos.y - float(0.25);
-  
+
   vec3 gpink = (smoothstep(0.25, 0.75, zstart + float(1)) - smoothstep(0.25, 0.75, zstart + float(0.5))) * pink;
   vec3 gviolet = (smoothstep(0.25, 0.75, zstart + float(0.5)) - smoothstep(0.25, 0.75, zstart + float(0))) * violet;
   vec3 gblue = (smoothstep(0.25, 0.75, zstart - float(0)) - smoothstep(0.25, 0.75, zstart - float(0.5))) * blue;
@@ -269,7 +279,7 @@ void main() {
 	#include <fog_fragment>
 }
     </script>
-    <script id="vert" type="x-shader/x-fragment">
+  <script id="vert" type="x-shader/x-fragment">
 #define PHYSICAL
 varying vec3 vViewPosition;
 #ifndef FLAT_SHADED
@@ -312,23 +322,23 @@ void main() {
 	#include <worldpos_vertex>
 	vQPos = - worldPosition.xyz;
 	#include <shadowmap_vertex>
-	
+
 }
     </script>
-    <script src="https://ajax.googleapis.com/ajax/libs/threejs/r76/three.min.js"></script>
-    <script src="http://mrdoob.github.com/three.js/examples/js/shaders/CopyShader.js"></script>
-		<script src="http://mrdoob.github.com/three.js/examples/js/shaders/SSAOShader.js"></script>
-		
-		<script src="http://mrdoob.github.com/three.js/examples/js/postprocessing/EffectComposer.js"></script>
-		<script src="http://mrdoob.github.com/three.js/examples/js/postprocessing/RenderPass.js"></script>
-		<script src="http://mrdoob.github.com/three.js/examples/js/postprocessing/MaskPass.js"></script>
-		<script src="http://mrdoob.github.com/three.js/examples/js/postprocessing/ShaderPass.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/threejs/r76/three.min.js"></script>
+  <script src="http://mrdoob.github.com/three.js/examples/js/shaders/CopyShader.js"></script>
+  <script src="http://mrdoob.github.com/three.js/examples/js/shaders/SSAOShader.js"></script>
 
-    <script src="./firstperson.js"></script>
-    
-    <script src="./subdivision.js"></script>
+  <script src="http://mrdoob.github.com/three.js/examples/js/postprocessing/EffectComposer.js"></script>
+  <script src="http://mrdoob.github.com/three.js/examples/js/postprocessing/RenderPass.js"></script>
+  <script src="http://mrdoob.github.com/three.js/examples/js/postprocessing/MaskPass.js"></script>
+  <script src="http://mrdoob.github.com/three.js/examples/js/postprocessing/ShaderPass.js"></script>
 
-    <script src="./script.js"></script>
+  <script src="./firstperson.js"></script>
+
+  <script src="./subdivision.js"></script>
+
+  <script src="./script.js"></script>
 </body>
 
 </html>
