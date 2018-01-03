@@ -112,6 +112,8 @@ function init() {
     })
     window.addEventListener('keydown', function (event) {
         if (event.keyCode === 13) resetCamera();
+        if (event.keyCode === 32) controls.enabled = !controls.enabled;
+        if (event.keyCode === 37 || event.keyCode === 38 || event.keyCode === 39 || event.keyCode === 40 || event.keyCode === 87 || event.keyCode === 68 || event.keyCode === 83 || event.keyCode === 65)  controls.enabled = true;
     }, false);
     updateTerrain();
     animate();
